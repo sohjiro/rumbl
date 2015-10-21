@@ -2,7 +2,7 @@ defmodule Rumbl.UserController do
   use Rumbl.Web, :controller
   alias Rumbl.User
 
-  def index(conn, params) do
+  def index(conn, _params) do
     users = Repo.all(Rumbl.User)
     render conn, "index.html", users: users
   end
@@ -18,7 +18,7 @@ defmodule Rumbl.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
-    changeset = User.changeset(%User{}, user_params)
+    changeset = User.registration_changeset(%User{}, user_params)
     case Repo.insert(changeset) do
       {:ok, user} ->
         conn
