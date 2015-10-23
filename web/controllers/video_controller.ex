@@ -5,13 +5,20 @@ defmodule Rumbl.VideoController do
 
   plug :scrub_params, "video" when action in [:create, :update]
 
+  def action(conn, _) do
+    apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.current_user])
+  end
+
   def index(conn, _params) do
     videos = Repo.all(Video)
     render(conn, "index.html", videos: videos)
   end
 
   def new(conn, _params) do
-    changeset = Video.changeset(%Video{})
+    changeset =
+    conn.assigns.current_user
+    |> build(:videos)
+    |> Video.changeset
     render(conn, "new.html", changeset: changeset)
   end
 
