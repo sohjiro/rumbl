@@ -19,9 +19,6 @@ defmodule Rumbl.Permalink do
   end
 
   def dump(integer) when is_integer(integer), do: {:ok, integer}
-  def dump(_), do: :error
-
   def load(integer) when is_integer(integer), do: {:ok, integer}
-  def load(_), do: :error
 
 end
