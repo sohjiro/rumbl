@@ -1,5 +1,8 @@
 defmodule Rumbl.UserSocket do
   use Phoenix.Socket
+  alias Rumbl.Repo
+
+  @max_age 2 * 7 * 24 * 60 * 60
 
   ## Channels
   channel "videos:*", Rumbl.VideoChannel
@@ -8,9 +11,17 @@ defmodule Rumbl.UserSocket do
   transport :websocket, Phoenix.Transports.WebSocket
   transport :longpoll, Phoenix.Transports.LongPoll
 
-  def connect(_params, socket) do
-    {:ok, socket}
+  def connect(%{"token" => token}, socket) do
+    case Phoenix.Token.verify(socket, "user socket", token, max_age: @max_age) do
+      {:ok, user_id} ->
+        user = Repo.get!(Rumbl.User, user_id)
+        {:ok, assign(socket, :user_id, user_id)}
+      {:error, _reason} ->
+        :error
+    end
   end
 
-  def id(_socket), do: nil
+  def connect(_params, _socket), do: :error
+
+  def id(socket), do: "users_socket:#{socket.assigns.user_id}"
 end
