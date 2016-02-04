@@ -1,8 +1,6 @@
 defmodule Rumbl.VideoChannel do
   use Rumbl.Web, :channel
 
-  import Ecto.Query
-
   def join("videos:" <> video_id, _params, socket) do
     {:ok, assign(socket, :video_id, video_id)}
   end
@@ -13,9 +11,9 @@ defmodule Rumbl.VideoChannel do
   end
 
   def handle_in("new_annotation", params, user, socket) do
-    changeset = %{}
+    changeset =
       user
-      |> assoc(:annotations, video_id: socket.assigns.video_id)
+      |> build_assoc(:annotations, video_id: socket.assigns.video_id)
       |> Rumbl.Annotation.changeset(params)
 
     case Repo.insert(changeset) do
